@@ -6,9 +6,9 @@ class ToolbarStore extends Store {
   constructor() {
     super(fromJS({
       tools: [
-        { name: 'Rectangle' },
-        { name: 'Image' },
-        { name: 'Text' }
+        { name: 'Rectangle', element: 'div' },
+        { name: 'Image', element: 'img' },
+        { name: 'Text', element: 'div' }
       ]
     }))
   }

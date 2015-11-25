@@ -1,5 +1,9 @@
 import Constants from './Constants'
 
 var LayerConstants = Constants.create([
-  // @todo
+  'CREATE_LAYER',
+  'REMOVE_LAYERS',
+  'SELECT_LAYER'
 ])
+
+export default LayerConstants

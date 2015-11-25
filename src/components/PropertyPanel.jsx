@@ -1,10 +1,9 @@
 export default function PropertyPanel(props) {
-  var state = props.state
   return (
     <div className="props-panel">
       <b>Properties</b>
       <ul className="prop-list">
-        {state.get('properties').map(prop => {
+        {props.properties.map(prop => {
           let PropView = prop.get('panel')
           return (
             <li className="prop-item" key={prop.get('name')}>

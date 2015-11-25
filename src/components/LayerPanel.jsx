@@ -1,12 +1,14 @@
-import LayerComponent from './LayerItem'
-import LayerList from './LayerList'
+import LayerComponent from './layer/LayerItem'
+import LayerList from './layer/LayerList'
+import LayerActions from '../actions/LayerActions'
+
+require('../style/layer.less')
 
 export default function LayerPanel(props) {
-  var state = props.state
   return (
     <section className="layer-panel">
       <b>Layers</b>
-      <LayerList layers={state.get('layers')}/>
+      <LayerList layers={props.layers} activeLayers={props.activeLayers} onSelect={LayerActions.selectLayer}/>
     </section>
   )
 }

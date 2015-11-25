@@ -1,13 +1,13 @@
 import {fromJS} from 'immutable'
 import Store from './Store'
-import PropPositionPanel from '../components/PropPositionPanel'
+import PositionPanel from '../components/properties/PositionPanel'
 
 class PropertyStore extends Store {
 
   constructor() {
     super(fromJS({
       properties: [
-        { name: 'Position', panel: PropPositionPanel }
+        { name: 'Position', panel: PositionPanel }
       ]
     }))
   }
