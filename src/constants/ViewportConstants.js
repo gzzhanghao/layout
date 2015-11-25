@@ -1,5 +1,6 @@
 import Constants from './Constants'
 
 var LayerConstants = Constants.create([
-  // @todo
+  'EMIT_FRAME',
+  'INIT_VIRTUAL_ROOT'
 ])

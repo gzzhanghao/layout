@@ -6,9 +6,11 @@ var Constants = {
     var result = {}
     keys.forEach(key => {
       result[key] = Symbol(key)
-      result[key + '_DONE'] = Symbol(key + '_DONE')
+      result[key + '_COMPLETE'] = Symbol(key + '_COMPLETE')
       result[key + '_FAILED'] = Symbol(key + '_FAILED')
     })
     return result
   }
 }
+
+export default Constants

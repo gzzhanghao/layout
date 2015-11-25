@@ -1,13 +1,25 @@
 var callbacks = []
+var promises = []
 
 var Dispatcher = {
 
   dispatch(type, data) {
-    callbacks.forEach(callback => callback(type, data))
+    var promise = Promise.resolve()
+    promises = callbacks.map(callback => new Promise(resolve => {
+      callback()
+      resolve()
+    }))
+    for (let i = promises.length - 1; i >= 0; i--) {
+      promise.then(promises[i])
+    }
   },
 
   register(callback) {
-    callbacks.push(callback)
+    return callbacks.push(callback) - 1
+  },
+
+  waitFor(key) {
+    Promise.resolve().then(promises[i])
   }
 }
 

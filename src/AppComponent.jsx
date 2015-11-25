@@ -1,6 +1,6 @@
 import React from 'react'
 import {List, Map, fromJS} from 'immutable'
-import EventEmitter from 'events';
+import EventEmitter from 'events'
 
 import ToolbarStore from './stores/ToolbarStore'
 import LayerStore from './stores/LayerStore'
@@ -9,6 +9,7 @@ import PropertyStore from './stores/PropertyStore'
 import ToolbarPanel from './components/ToolbarPanel'
 import LayerPanel from './components/LayerPanel'
 import PropertyPanel from './components/PropertyPanel'
+import ViewportComponent from './components/ViewportComponent'
 
 export default class AppComponent extends React.Component {
 
@@ -32,6 +33,7 @@ export default class AppComponent extends React.Component {
         <ToolbarPanel state={this.state.toolbar}/>
         <LayerPanel state={this.state.layer}/>
         <PropertyPanel state={this.state.property}/>
+        <ViewportComponent />
       </div>
     )
   }

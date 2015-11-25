@@ -1,7 +1,5 @@
 import Constants from './Constants'
 
-var PropertyConstants = {
-  ACTIONS: Constants.create([
-    // @todo
-  ])
-}
+var PropertyConstants = Constants.create([
+  // @todo
+])

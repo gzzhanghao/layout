@@ -1,8 +1,7 @@
 import ToolItem from './ToolItem'
 
 export default function ToolbarPanel(props) {
-  var state = props.state;
-  var action = props.action;
+  var state = props.state
   return (
     <section className="toolbar">
       <b>Toolbar</b>

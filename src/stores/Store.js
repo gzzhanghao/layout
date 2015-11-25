@@ -5,7 +5,7 @@ export default class Store {
   constructor(initialState) {
     this.callbacks = []
     this.state = initialState
-    Dispatcher.register(this.dispatch.bind(this))
+    this.dispatchKey = Dispatcher.register(this.dispatch.bind(this))
   }
 
   setState(state) {

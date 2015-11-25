@@ -1,7 +1,5 @@
 import Constants from './Constants'
 
-var ToolbarConstants = {
-  ACTIONS: Constants.create([
-    // @todo
-  ])
-}
+var ToolbarConstants = Constants.create([
+  // @todo
+])

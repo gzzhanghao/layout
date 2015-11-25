@@ -1,5 +1,5 @@
 export default function PropertyPanel(props) {
-  var state = props.state;
+  var state = props.state
   return (
     <div className="props-panel">
       <b>Properties</b>
