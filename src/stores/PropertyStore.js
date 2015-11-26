@@ -7,7 +7,7 @@ class PropertyStore extends Store {
   constructor() {
     super(fromJS({
       properties: [
-        { name: 'Position', panel: PositionPanel }
+        { name: 'Position', panel: PositionPanel, available: [/.+/] }
       ]
     }))
   }
