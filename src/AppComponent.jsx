@@ -20,7 +20,8 @@ export default class AppComponent extends React.Component {
       tools: ToolbarStore.getState().get('tools'),
       properties: PropertyStore.getState().get('properties'),
       layers: LayerStore.getState().get('layers'),
-      activeLayers: LayerStore.getActiveLayers()
+      selectedLayerIndexes: LayerStore.getState().get('selectedLayers'),
+      selectedLayers: LayerStore.getSelectedLayers()
     }
 
     ToolbarStore.onChange(() => this.setState({
@@ -29,7 +30,8 @@ export default class AppComponent extends React.Component {
 
     LayerStore.onChange(() => this.setState({
       layers: LayerStore.getState().get('layers'),
-      activeLayers: LayerStore.getActiveLayers()
+      selectedLayerIndexes: LayerStore.getState().get('selectedLayers'),
+      selectedLayers: LayerStore.getSelectedLayers()
     }))
 
     PropertyStore.onChange(() => this.setState({
@@ -41,8 +43,8 @@ export default class AppComponent extends React.Component {
     return (
       <div className="app">
         <Toolbar tools={this.state.tools}/>
-        <LayerPanel layers={this.state.layers} activeLayers={this.state.activeLayers}/>
-        <PropertyPanel properties={this.state.properties} activeLayers={this.state.activeLayers}/>
+        <LayerPanel layers={this.state.layers} selectedLayers={this.state.selectedLayerIndexes}/>
+        <PropertyPanel properties={this.state.properties} selectedLayers={this.state.selectedLayers}/>
         <ViewportComponent />
       </div>
     )

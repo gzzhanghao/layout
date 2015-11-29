@@ -1,10 +1,8 @@
-.layer {
-  &.active {
-    > .legend {
-      background: lightgrey
-    }
-  }
-  .name {
-    padding-left: 4px
+@import "mixins";
+
+.layer-item {
+  .user-select(none);
+  &.selected {
+    background: lightgrey
   }
 }

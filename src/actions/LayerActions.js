@@ -12,16 +12,32 @@ var LayerActions = {
     Dispatcher.dispatch(LayerConstants.CREATE_GROUP)
   },
 
-  moveLayers(path) {
-    Dispatcher.dispatch(LayerConstants.MOVE_LAYERS, { path })
+  moveLayers(toIndex) {
+    Dispatcher.dispatch(LayerConstants.MOVE_LAYERS, { toIndex })
   },
 
   removeLayers() {
     Dispatcher.dispatch(LayerConstants.REMOVE_LAYERS)
   },
 
-  selectLayer(path, multi, range) {
-    Dispatcher.dispatch(LayerConstants.SELECT_LAYER, { path, multi, range })
+  updateProperties(name, properties) {
+    Dispatcher.dispatch(LayerConstants.UPDATE_PROPERTIES, { name, properties })
+  },
+
+  addSelection(index) {
+    Dispatcher.dispatch(LayerConstants.ADD_SELECTION, { index })
+  },
+
+  setSelection(index) {
+    Dispatcher.dispatch(LayerConstants.SET_SELECTION, { index })
+  },
+
+  removeSelection(index) {
+    Dispatcher.dispatch(LayerConstants.REMOVE_SELECTION, { index })
+  },
+
+  clearSelection() {
+    Dispatcher.dispatch(LayerConstants.CLEAR_SELECTION)
   }
 }
 

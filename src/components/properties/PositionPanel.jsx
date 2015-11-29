@@ -1,23 +1,57 @@
+import {Map} from 'immutable'
+import capitalize from 'lodash.capitalize'
+import LayerActions from '../../actions/LayerActions'
+
 export default function PropPositionComponent(props) {
+
+  let properties = ['x', 'y', 'width', 'height']
+  let states = props.state.toJS()
+  let state = states[0] || {}
+  let placeholder = {}
+  let formalize = defaults.bind(null, '')
+
+  properties.forEach(prop => {
+    for (let i = states.length - 1; i > 0; i--) {
+      if (formalize((states[i] || {})[prop]) !== formalize(state[prop])) {
+        state[prop] = ''
+        placeholder[prop] = '(Multiple values)'
+        break
+      }
+    }
+  })
+
   return (
     <fieldset className="prop prop-position">
       <legend>Position</legend>
-      <div className="field">
-        <label htmlFor="prop-pos-x">X</label>
-        <input type="text" id="prop-pos-x"/>
-      </div>
-      <div className="field">
-        <label htmlFor="prop-pos-y">Y</label>
-        <input type="text" id="prop-pos-y"/>
-      </div>
-      <div className="field">
-        <label htmlFor="prop-pos-width">Width</label>
-        <input type="text" id="prop-pos-width"/>
-      </div>
-      <div className="field">
-        <label htmlFor="prop-pos-height">Height</label>
-        <input type="text" id="prop-pos-height"/>
-      </div>
+      {properties.map(prop => (
+        <div className="field" key={prop}>
+          <label htmlFor={`prop-pos-${prop}`}>{capitalize(prop)}</label>
+          <input type="text"
+                 id={`prop-pos-${prop}`}
+                 value={state[prop]}
+                 placeholder={placeholder[prop]}
+                 onKeyDown={event => onKeyDown(event)}
+                 onChange={event => onChange(prop, event.target.value)}/>
+        </div>
+      ))}
     </fieldset>
   )
+
+  function onKeyDown(event) {
+    if (event.keyCode === 13) {
+      event.preventDefault()
+      document.activeElement.blur()
+    }
+  }
+
+  function onChange(type, value) {
+    LayerActions.updateProperties('position', { [type]: value })
+  }
+
+  function defaults(defaultValue, value) {
+    if (typeof value === 'undefined' || value === null) {
+      return defaultValue
+    }
+    return value
+  }
 }

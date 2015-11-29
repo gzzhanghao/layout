@@ -5,7 +5,11 @@ var LayerConstants = Constants.create([
   'CREATE_GROUP',
   'MOVE_LAYERS',
   'REMOVE_LAYERS',
-  'SELECT_LAYER'
+  'UPDATE_PROPERTIES',
+  'ADD_SELECTION',
+  'SET_SELECTION',
+  'REMOVE_SELECTION',
+  'CLEAR_SELECTION'
 ])
 
 export default LayerConstants

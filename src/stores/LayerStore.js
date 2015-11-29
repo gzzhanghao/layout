@@ -6,89 +6,114 @@ class LayerStore extends Store {
 
   constructor() {
     super(fromJS({
-      activeLayers: [],
+      selectedLayers: [],
       layers: [
-        { id: 0, type: 'Rectangle' },
-        { id: 1, type: 'Group', children: [
-          { id: 2, type: 'Image' },
-          { id: 3, type: 'Text', name: 'Helloworld' }
-        ] }
+        { level: 0, type: 'Rectangle', properties: {} },
+        { level: 0, type: 'Image', properties: {} },
+        { level: 0, type: 'Group', properties: {}, hasChildren: true },
+        { level: 1, type: 'Image', properties: {} },
+        { level: 1, type: 'Rectangle', properties: {} },
+        { level: 0, type: 'Image', properties: {} }
       ]
     }))
-    this.layerId = 4
   }
 
-  getFirstActivePath() {
-    return this.state.get('activeLayers').sort((a, b) => a.join('/') > b.join('/')).first()
-  }
-
-  getLastActivePath() {
-    return this.state.get('activeLayers').last()
-  }
-
-  getActiveLayers() {
-    let activeLayers = this.state.get('activeLayers')
-    if (activeLayers) {
-      return activeLayers.map(path => this.getLayer(path))
-    }
-    return List()
-  }
-
-  getLayer(path) {
-    return this.state.getIn(this.getFullPath(path).unshift('layers'))
-  }
-
-  getFullPath(path) {
-    return path.interpose('children')
+  getSelectedLayers() {
+    let layers = this.state.get('layers')
+    return this.state.get('selectedLayers').map(index => layers.get(index))
   }
 
   createLayer(options) {
-    let layer = Map({ id: this.layerId++, type: options.type })
     let layers = this.state.get('layers')
-    let firstLayerPath = this.getFirstActivePath()
-    if (!firstLayerPath) {
-      layers = layers.unshift(layer)
-      firstLayerPath = List([0])
-    } else if (this.getLayer(firstLayerPath).has('children')) {
-      layers = layers.updateIn(this.getFullPath(firstLayerPath).push('children'), children => children.unshift(layer))
-      firstLayerPath = firstLayerPath.push(0)
-    } else {
-      let index = firstLayerPath.last()
-      layers = layers.updateIn(this.getFullPath(firstLayerPath).pop(), children => children.splice(index, 0, layer))
+    let selectedLayerIndex = this.state.get('selectedLayers').sort().first()
+
+    let index = 0
+    let level = 0
+
+    if (typeof selectedLayerIndex !== 'undefined') {
+      let selectedLayer = layers.get(selectedLayerIndex)
+      index = selectedLayerIndex
+      level = selectedLayer.get('level')
+      if (selectedLayer.get('hasChildren')) {
+        level += 1
+        index += 1
+      }
     }
-    this.setState(this.state.merge({ layers, activeLayers: List([firstLayerPath]) }))
+    this.setState(this.state.merge({
+      layers: layers.splice(index, 0, Map({ level, type: options.type, properties: Map() })),
+      selectedLayers: List([index])
+    }))
   }
 
-  selectLayer(path, multi, range) {
-    let activeLayers = this.state.get('activeLayers')
-    if (!multi) {
-      activeLayers = List()
+  addSelection(index) {
+    if (typeof index === 'number') {
+      let selectedLayers = this.state.get('selectedLayers')
+      if (!selectedLayers.contains(index)) {
+        this.setState(this.state.set('selectedLayers', selectedLayers.push(index)))
+      }
+      return
     }
-    if (range) {
-      // @todo
+    this.setState(this.state.update('selectedLayers', selectedLayers =>
+      selectedLayers.withMutations(selectedLayers => {
+        index.forEach(index => {
+          if (!selectedLayers.contains(index)) {
+            selectedLayers.push(index)
+          }
+        })
+      })
+    ))
+  }
+
+  setSelection(index) {
+    if (typeof index === 'number') {
+      index = List([index])
     }
-    this.getLastActivePath()
-    path = List(path.slice().reverse())
-    let newActiveLayers = activeLayers.filter(activePath => !path.equals(activePath))
-    if (newActiveLayers.size === activeLayers.size || newActiveLayers.size < 1) {
-      newActiveLayers = newActiveLayers.push(path)
+    this.setState(this.state.set('selectedLayers', index))
+  }
+
+  clearSelection() {
+    this.setState(this.state.set('selectedLayers', List()))
+  }
+
+  removeSelection(index) {
+    if (typeof index === 'number') {
+      this.setState(this.state.update('selectedLayers', selectedLayers => selectedLayers.remove(selectedLayers.indexOf(index))))
+      return
     }
-    this.setState(this.state.set('activeLayers', newActiveLayers))
+    this.setState(this.state.update('selectedLayers', selectedLayers => {
+      index.forEach(index => {
+        selectedLayers = selectedLayers.remove(selectedLayers.indexOf(index))
+      })
+    }))
   }
 
   removeLayers() {
-    let layers = this.state.get('layers')
-    this.state.get('activeLayers').sort((a, b) => a.join('/') < b.join('/')).forEach(activeLayerPath => {
-      if (activeLayerPath.size === 1) {
-        layers = layers.remove(activeLayerPath.get(0))
-        return
-      }
-      layers = layers.updateIn(
-        this.getFullPath(activeLayerPath.pop()).push('children'),
-        children => children.remove(activeLayerPath.last())
-      )
+    let selectedLayers = this.state.get('selectedLayers').sort((a, b) => b - a)
+    let selectedLayerIndex = selectedLayers.last()
+    let layers = this.state.get('layers').toArray()
+    let layersSize = layers.length
+    let removedLayers = []
+
+    selectedLayers.forEach(index => {
+      let layer = layers[index]
+      let baseLevel = layer.get('level')
+      let i = index + 1
+      while (i < layersSize && layers[i].get('level') > baseLevel) i += 1
+      removedLayers = layers.splice(index, i - index).map(layer =>
+          layer.update('level', level => level - baseLevel)
+      ).concat(removedLayers)
+      layersSize = layers.length
     })
-    this.setState(this.state.merge({ layers, activeLayers: List() }))
+
+    selectedLayers = List()
+    if (layersSize > selectedLayerIndex) {
+      selectedLayers = List([selectedLayerIndex])
+    } else if (layersSize) {
+      selectedLayers = List([layersSize - 1])
+    }
+    this.setState(this.state.merge({ layers: List(layers), selectedLayers }))
+
+    return List(removedLayers)
   }
 
   moveLayers(path) {
@@ -96,25 +121,67 @@ class LayerStore extends Store {
   }
 
   createGroup() {
-    // @todo
+    let selectedLayerIndex = this.state.get('selectedLayers').sort((a, b) => b - a).last()
+    if (typeof selectedLayerIndex === 'undefined') {
+      this.setState(this.state.merge({
+        layers: this.state.get('layers').unshift(Map({
+          level: 0, type: 'Group', properties: Map(), hasChildren: true
+        })),
+        selectedLayers: List([0])
+      }))
+      return
+    }
+    let baseLevel = this.state.getIn(['layers', selectedLayerIndex, 'level']) + 1
+    let children = this.removeLayers().map(layer =>
+      layer.update('level', level => level + baseLevel)
+    ).unshift(Map({
+      level: baseLevel - 1, type: 'Group', properties: Map(), hasChildren: true
+    }))
+    let layers = this.state.get('layers')
+    this.setState(this.state.merge({
+      layers: layers.slice(0, selectedLayerIndex).concat(children, layers.slice(selectedLayerIndex)),
+      selectedLayers: List([selectedLayerIndex])
+    }))
+  }
+
+  updateProperties(name, properties) {
+    let layers = this.state.get('layers')
+
+    this.state.get('selectedLayers').forEach(index => {
+      layers = layers.updateIn([index, 'properties', name], state => (state || Map()).merge(properties))
+    })
+
+    this.setState(this.state.set('layers', layers))
   }
 
   dispatch(type, data) {
     switch (type) {
-      case LayerConstants.REMOVE_LAYERS:
-        this.removeLayers()
+      case LayerConstants.ADD_SELECTION:
+        this.addSelection(data.index)
         break
-      case LayerConstants.SELECT_LAYER:
-        this.selectLayer(data.path, data.multi, data.range)
+      case LayerConstants.SET_SELECTION:
+        this.setSelection(data.index)
+        break
+      case LayerConstants.REMOVE_SELECTION:
+        this.removeSelection(data.index)
+        break
+      case LayerConstants.CLEAR_SELECTION:
+        this.clearSelection()
         break
       case LayerConstants.CREATE_LAYER:
         this.createLayer(data)
         break
+      case LayerConstants.CREATE_GROUP:
+        this.createGroup()
+        break
       case LayerConstants.MOVE_LAYERS:
         this.moveLayers(data.path)
         break
-      case LayerConstants.CREATE_GROUP:
-        this.createGroup()
+      case LayerConstants.REMOVE_LAYERS:
+        this.removeLayers()
+        break
+      case LayerConstants.UPDATE_PROPERTIES:
+        this.updateProperties(data.name, data.properties)
         break
     }
   }
