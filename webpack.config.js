@@ -3,8 +3,7 @@ module.exports = {
   output: {
     path: 'dist',
     filename: 'bundle.min.js',
-    publicPath: '/dist/',
-    library: 'Layout'
+    publicPath: '/dist/'
   },
   module: {
     loaders: [{
@@ -21,7 +20,8 @@ module.exports = {
   externals: {
     'react': 'React',
     'react-dom': 'ReactDOM',
-    'immutable': 'Immutable'
+    'immutable': 'Immutable',
+    'velement': 'VElement'
   },
   devtool: '#source-map',
   resolve: {

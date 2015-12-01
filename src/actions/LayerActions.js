@@ -1,11 +1,18 @@
 import Dispatcher from '../Dispatcher'
+import ViewportStore from '../stores/ViewportStore'
+import LayerUtils from '../utils/LayerUtils'
 import LayerStore from '../stores/LayerStore'
 import LayerConstants from '../constants/LayerConstants'
 
 var LayerActions = {
 
   createLayer(options) {
-    Dispatcher.dispatch(LayerConstants.CREATE_LAYER, { type: options.get('name') })
+    LayerUtils.createLayer(
+      ViewportStore.getState().get('virtualRoot'),
+      LayerStore.getSelectedPath(),
+      options.get('element')
+    )
+    Dispatcher.dispatch(LayerConstants.CREATE_LAYER, { type: options.get('name'), element: options.get('element') })
   },
 
   createGroup() {
@@ -22,6 +29,7 @@ var LayerActions = {
 
   updateProperties(name, properties) {
     Dispatcher.dispatch(LayerConstants.UPDATE_PROPERTIES, { name, properties })
+    LayerUtils.update(LayerStore.getState().get('layers'))
   },
 
   addSelection(index) {

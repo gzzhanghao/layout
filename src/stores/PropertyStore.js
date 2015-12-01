@@ -9,7 +9,7 @@ class PropertyStore extends Store {
   constructor() {
     super(fromJS({
       properties: [
-        { name: 'Position', key: 'position', panel: PositionPanel, available: /.+/ },
+        { name: 'Position', key: 'layout', panel: PositionPanel, available: /.+/ },
         { name: 'Background', key: 'background', panel: BackgroundPanel, available: /.+/ }
       ]
     }))

@@ -2,11 +2,9 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import ViewportAction from '../actions/ViewportActions'
 
-export default class ViewportComponent extends React.Component {
+import '../style/viewport.less'
 
-  constructor(props, context) {
-    super(props, context)
-  }
+export default class ViewportComponent extends React.Component {
 
   render() {
     return (
@@ -18,15 +16,9 @@ export default class ViewportComponent extends React.Component {
 
   componentDidMount() {
     ViewportAction.initContainer(ReactDOM.findDOMNode(this.refs.container))
-    this.onFrame()
   }
 
   componentWillUnmount() {
     ViewportAction.destructContainer()
-  }
-
-  onFrame() {
-    ViewportAction.emitFrame()
-    requestAnimationFrame(this.onFrame.bind(this))
   }
 }

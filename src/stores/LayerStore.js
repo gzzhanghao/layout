@@ -7,15 +7,19 @@ class LayerStore extends Store {
   constructor() {
     super(fromJS({
       selectedLayers: [],
-      layers: [
-        { level: 0, type: 'Rectangle', properties: {} },
-        { level: 0, type: 'Image', properties: {} },
-        { level: 0, type: 'Group', properties: {}, hasChildren: true },
-        { level: 1, type: 'Image', properties: {} },
-        { level: 1, type: 'Rectangle', properties: {} },
-        { level: 0, type: 'Image', properties: {} }
-      ]
+      layers: []
     }))
+  }
+
+  getSelectedPath() {
+    let path = []
+    let layers = this.state.get('layers')
+    let target = Math.min(layers.size - 1, this.state.get('selectedLayers').sort().first() || 0)
+    for (let i = 0; i <= target; i++) {
+      let level = layers.getIn([i, 'level'])
+      path[level] = i - (path[level - 1] || 0)
+    }
+    return List(path)
   }
 
   getSelectedLayers() {
@@ -40,7 +44,7 @@ class LayerStore extends Store {
       }
     }
     this.setState(this.state.merge({
-      layers: layers.splice(index, 0, Map({ level, type: options.type, properties: Map() })),
+      layers: layers.splice(index, 0, Map({ level, type: options.type, element: options.element, properties: Map() })),
       selectedLayers: List([index])
     }))
   }

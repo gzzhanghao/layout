@@ -4,7 +4,7 @@ import LayerActions from '../../actions/LayerActions'
 
 export default function PropPositionComponent(props) {
 
-  let properties = ['x', 'y', 'width', 'height']
+  let properties = ['left', 'top', 'width', 'height']
   let states = props.state.toJS()
   let state = states[0] || {}
   let placeholder = {}
@@ -45,7 +45,7 @@ export default function PropPositionComponent(props) {
   }
 
   function onChange(type, value) {
-    LayerActions.updateProperties('position', { [type]: value })
+    LayerActions.updateProperties('layout', { [type]: value })
   }
 
   function defaults(defaultValue, value) {

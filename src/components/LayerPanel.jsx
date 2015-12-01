@@ -3,7 +3,7 @@ import {List, Range} from 'immutable'
 import classNames from 'classnames'
 import LayerActions from '../actions/LayerActions'
 
-require('../style/layer.less')
+import '../style/layer.less'
 
 export default class LayerPanel extends React.Component {
 
@@ -39,9 +39,9 @@ export default class LayerPanel extends React.Component {
     this.volatileLayer = null
     if (range) {
       let start = this.props.selectedLayers.last()
-      let rangeSelection = Range(index, start).toList()
+      let rangeSelection = Range(index, start)
       if (!multi) {
-        LayerActions.setSelection(rangeSelection.push(start))
+        LayerActions.setSelection(rangeSelection.toList().push(start))
       } else {
         LayerActions.addSelection(rangeSelection)
       }
