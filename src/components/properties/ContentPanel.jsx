@@ -45,7 +45,7 @@ export default function ContentPanel(props) {
   }
 
   function onChange(type, value) {
-    LayerActions.updateProperties('content', { [type]: value })
+    props.onChange({ [type]: value })
   }
 
   function defaults(defaultValue, value) {

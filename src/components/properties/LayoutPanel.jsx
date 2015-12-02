@@ -45,7 +45,7 @@ export default function LayoutPanel(props) {
   }
 
   function onChange(type, value) {
-    LayerActions.updateProperties('layout', { [type]: value })
+    props.onChange({ [type]: value })
   }
 
   function defaults(defaultValue, value) {

@@ -45,7 +45,7 @@ export default function SourcePanel(props) {
   }
 
   function onChange(type, value) {
-    LayerActions.updateProperties('source', { [type]: value })
+    props.onChange({ [type]: value })
   }
 
   function defaults(defaultValue, value) {

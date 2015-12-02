@@ -45,7 +45,7 @@ export default function BackgroundPanel(props) {
   }
 
   function onChange(type, value) {
-    LayerActions.updateProperties('background', { [type]: value })
+    props.onChange({ [type]: value })
   }
 
   function defaults(defaultValue, value) {

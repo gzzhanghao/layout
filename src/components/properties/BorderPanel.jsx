@@ -45,7 +45,7 @@ export default function BorderPanel(props) {
   }
 
   function onChange(type, value) {
-    LayerActions.updateProperties('border', { [type]: value })
+    props.onChange({ [type]: value })
   }
 
   function defaults(defaultValue, value) {
