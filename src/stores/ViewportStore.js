@@ -5,9 +5,11 @@ import ViewportConstants from '../constants/ViewportConstants'
 class ViewportStore extends Store {
 
   constructor() {
-    super(fromJS({
-      virtualRoot: null
-    }))
+    super(fromJS({ virtualRoot: null }))
+  }
+
+  getVirtualRoot() {
+    return this.state.get('virtualRoot')
   }
 
   dispatch(type, data) {

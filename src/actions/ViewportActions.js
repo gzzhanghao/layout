@@ -7,7 +7,7 @@ let e = VElement.e
 var ViewportActions = {
 
   initContainer(container) {
-    let virtualRoot = LayerUtils.getRoot()
+    let virtualRoot = LayerUtils.createVirtualRoot()
     virtualRoot.appendTo(container)
     Dispatcher.dispatch(ViewportConstants.INIT_VIRTUAL_ROOT, { virtualRoot })
   },

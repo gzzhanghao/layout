@@ -5,14 +5,18 @@ export default function Toolbar(props) {
     <section className="toolbar">
       <b>Toolbar</b>
       <ul className="tool-list">
-        {props.tools.map(tool => (
-          <li className="tool-item" key={tool.get('name')}>
-            <button className="tool-item" onClick={() => LayerActions.createLayer(tool)}>
+        {props.tools.map((tool, key) => (
+          <li className="tool-item" key={key}>
+            <button className="tool-item" onClick={() => onClick(key)}>
               {tool.get('name')}
             </button>
           </li>
-        ))}
+        )).valueSeq()}
       </ul>
     </section>
   )
+
+  function onClick(key) {
+~    LayerActions.createLayer(key)
+  }
 }

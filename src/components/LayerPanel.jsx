@@ -24,7 +24,7 @@ export default class LayerPanel extends React.Component {
                   style={{ paddingLeft: `${20 * layer.get('level')}px` }}
                   onMouseDown={event => this.onMouseDown(index, selected, event)}
                   onClick={event => this.onClick(index, event)}>
-                {layer.get('type')}
+                {layer.get('name')}
               </li>
             )
           })}

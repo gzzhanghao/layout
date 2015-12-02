@@ -2,7 +2,7 @@ import {Map} from 'immutable'
 import capitalize from 'lodash.capitalize'
 import LayerActions from '../../actions/LayerActions'
 
-export default function PropPositionComponent(props) {
+export default function LayoutPanel(props) {
 
   let properties = ['left', 'top', 'width', 'height']
   let states = props.state.toJS()

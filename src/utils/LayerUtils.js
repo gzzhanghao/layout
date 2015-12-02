@@ -1,79 +1,163 @@
+import assign from 'object-assign'
 import {Map} from 'immutable'
 import VElement from 'velement'
 
 let e = VElement.e
 
-let virtualRoot = new VElement(e('div', {}, { className: 'root' }))
+assign(VElement.properties, {
 
-function build(layer) {
+  border(config, { style }) {
+    if (isFinite(config.width) && !Number.isNaN(parseFloat(config.width))) {
+      style.borderWidth = config.width + 'px'
+    }
+    if (config.style) {
+      style.borderStyle = config.style
+    }
+    if (config.color) {
+      style.borderColor = config.color
+    }
+  },
 
-  let properties = layer.get('properties') || Map()
-  let layout = properties.get('layout') || Map()
-  let children = layer.get('children')
+  background(config, { style }) {
+    if (config.color) {
+      style.backgroundColor = config.color
+    } else if (config.image) {
+      style.backgroundImage = config.image
+    }
+  },
 
-  return `e(
-    ${JSON.stringify(layer.get('type'))}, {
-      ${layout.map((val, key) => (
-        `${key}: function($) { return ${normalize(val)} }`
-      )).join(',')}
-    },
-    function($) {
-      return {
-        ${properties.remove('layout').map((props, name) => (
-          `${JSON.stringify(name)}: {
-            ${props.map((val, key) => `${JSON.stringify(key)}: ${normalize(val)}`).join(',')}
-          }`
-        )).join(',')}
-      }
-    },
-    ${!children ? 'null' : `[
-      ${children.map(build).join(',')}
-    ]`},
-    ${JSON.stringify(layer.get('key') || null)},
-    ${JSON.stringify(layer.get('namespace') || null)}
-  )`
+  source(config, { prop }) {
+    prop.src = config.source
+  }
+})
+
+function getParentOf(path, fromRoot) {
+  return path.slice(0, -1).reduce((parent, index) => parent.state.children[index], fromRoot)
 }
 
-function normalize(val) {
-  //try {
-  //  new Function('', val)
-  //} catch (e) {
-  //  return `${JSON.stringify(val)}`
-  //}
-  return val
+function stringify(obj) {
+  var fns = []
+  var placeholder = Date.now() + '____PLACEHOLDER____' + (Math.random() * Number.MAX_SAFE_INTEGER | 0)
+  var json = JSON.stringify(obj, (key, value) => {
+    if (typeof value === 'function' || typeof value === 'string') {
+      fns.push(value)
+      return placeholder
+    }
+    return value
+  })
+  return json.replace(new RegExp('"' + placeholder + '"', 'g'), () => fns.shift() || '""')
 }
+
+function wrap(properties) {
+  return new Function('$', `return ${stringify(properties)}`)
+}
+
+function wrapProperties(properties) {
+  let layout = {}
+  if (properties.has('layout')) {
+    layout = properties.get('layout').toJS()
+  }
+  Object.keys(layout).forEach(key => {
+    layout[key] = wrap(layout[key])
+  })
+
+  return { layout, props: wrap(properties.remove('layout').toJS()) }
+}
+
+let symProps = Symbol('props')
 
 let LayerUtils = {
 
-  createLayer(virtualRoot, targetIndex, type) {
-    let parent = virtualRoot
-    targetIndex.slice(0, -1).forEach(index => {
-      parent = parent.state.children[index]
-    })
-    let index = targetIndex.last()
-    let child = new VElement(e(type))
-    if (parent.state.children.length > index) {
-      parent.element.insertBefore(child.element, parent.element.children[index])
+  createVirtualRoot() {
+    return new VElement(e('div', { width: 768 }, { className: 'root' }))
+  },
+
+  createLayer(virtualRoot, path, type, properties) {
+    let { layout, props } = wrapProperties(properties)
+    let opts = e(type, layout, props)
+    let child = new VElement(opts)
+
+    child[symProps] = properties
+
+    let parent = getParentOf(path, virtualRoot)
+    let children = parent.state.children
+
+    let index = path.last()
+
+    if (children.length > index) {
+      parent.element.insertBefore(child.element, children[index].element)
     } else {
       parent.element.appendChild(child.element)
     }
-    parent.state.children.splice(index, 0, child)
+
+    parent.opts.children.splice(index, 0, opts)
+    children.splice(index, 0, child)
+
+    virtualRoot.update()
   },
 
-  getRoot() {
-    return virtualRoot
-  },
+  createGroup(virtualRoot, selectedPaths) {
+    let opts = e('div')
+    let group = new VElement(opts)
 
-  update(layers) {
-    try {
-      virtualRoot.update(this.getOptions(layers))
-    } catch (e) {
-      console.warn('Error when updating', e.stack)
+    group[symProps] = Map()
+
+    group.state.children = this.removeLayers(virtualRoot, selectedPaths)
+    group.opts.children = group.state.children.map(child => child.opts)
+    group.state.children.forEach(child => {
+      group.element.appendChild(child.element)
+    })
+
+    let path = selectedPaths.first()
+    let parent = getParentOf(path, virtualRoot)
+    let index = path.last()
+    let children = parent.state.children
+
+    if (children.length > index) {
+      parent.element.insertBefore(group.element, children[index].element)
+    } else {
+      parent.element.appendChild(group.element)
     }
+
+    parent.opts.children.splice(index, 0, opts)
+    children.splice(index, 0, group)
+
+    virtualRoot.update()
   },
 
-  getOptions(layers) {
-    return new Function('e', `return ${build(Map({ name: 'div', children: layers }))}`).call(null, e)
+  moveLayers(virtualRoot, selectedPaths, toPath) {
+    // @todo
+  },
+
+  removeLayers(virtualRoot, selectedPaths) {
+    let removedLayers = selectedPaths.reverse().toArray().map(path => {
+      let parent = getParentOf(path, virtualRoot)
+      let index = path.last()
+      let children = parent.state.children
+      parent.element.removeChild(children[index].element)
+      parent.opts.children.splice(index, 1)
+      return children.splice(index, 1)[0]
+    }).reverse()
+    virtualRoot.update()
+    return removedLayers
+  },
+
+  updateProperties(virtualRoot, selectedPaths, name, properties) {
+    selectedPaths.forEach(path => {
+      let node = getParentOf(path, virtualRoot).state.children[path.last()]
+      try {
+        assign(node.opts, wrapProperties(node[symProps] = node[symProps].mergeIn([name], properties)))
+      } catch (e) {
+        // @todo Handle it
+        console.warn(e.stack)
+      }
+    })
+    try {
+      virtualRoot.update()
+    } catch (e) {
+      // @todo Handle it
+      console.warn(e.stack)
+    }
   }
 }
 

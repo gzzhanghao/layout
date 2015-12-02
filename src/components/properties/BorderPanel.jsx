@@ -2,9 +2,9 @@ import {Map} from 'immutable'
 import capitalize from 'lodash.capitalize'
 import LayerActions from '../../actions/LayerActions'
 
-export default function BackgroundPanel(props) {
+export default function BorderPanel(props) {
 
-  let properties = ['color', 'image']
+  let properties = ['width', 'style', 'color']
   let states = props.state.toJS()
   let state = states[0] || {}
   let placeholder = {}
@@ -22,7 +22,7 @@ export default function BackgroundPanel(props) {
 
   return (
     <fieldset className="prop prop-position">
-      <legend>Background</legend>
+      <legend>Border</legend>
       {properties.map(prop => (
         <div className="field" key={prop}>
           <label htmlFor={`prop-pos-${prop}`}>{capitalize(prop)}</label>
@@ -45,7 +45,7 @@ export default function BackgroundPanel(props) {
   }
 
   function onChange(type, value) {
-    LayerActions.updateProperties('background', { [type]: value })
+    LayerActions.updateProperties('border', { [type]: value })
   }
 
   function defaults(defaultValue, value) {
