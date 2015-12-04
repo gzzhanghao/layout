@@ -1,17 +1,17 @@
-import {List} from 'immutable'
+import {Map, List} from 'immutable'
 import Dispatcher from '../Dispatcher'
 import ViewportStore from '../stores/ViewportStore'
 import LayerUtils from '../utils/LayerUtils'
 import LayerStore from '../stores/LayerStore'
 import ToolbarStore from '../stores/ToolbarStore'
+import PropertyStore from '../stores/PropertyStore'
 import LayerConstants from '../constants/LayerConstants'
 
 var LayerActions = {
 
   createLayer(key) {
-    let options = ToolbarStore.getTool(key)
-    let element = options.get('element')
-    let properties = options.get('properties')
+    let tool = ToolbarStore.getTool(key)
+    let element = tool.get('element')
 
     let index = LayerStore.getSelectedIndexes().sort().first()
     let path = List([0])
@@ -25,19 +25,23 @@ var LayerActions = {
 
     LayerUtils.createLayer(
       ViewportStore.getVirtualRoot(),
-      path, element, properties
+      path, element
     )
 
     Dispatcher.dispatch(LayerConstants.CREATE_LAYER, {
-      type: key, element, properties,
-      name: `Unnamed ${options.get('name')}`
+      name: `Unnamed ${tool.get('name')}`,
+      type: tool.get('type'), element
     })
   },
 
   createGroup() {
+    let path = LayerStore.getSelectedPaths().first()
+    if (typeof path === 'undefined') {
+      path = List([0])
+    }
     LayerUtils.createGroup(
       ViewportStore.getVirtualRoot(),
-      LayerStore.getSelectedPaths()
+      path, LayerStore.getSelectedPaths()
     )
     Dispatcher.dispatch(LayerConstants.CREATE_GROUP)
   },
@@ -59,13 +63,19 @@ var LayerActions = {
     Dispatcher.dispatch(LayerConstants.REMOVE_LAYERS)
   },
 
-  updateProperties(name, properties) {
-    LayerUtils.updateProperties(
+  updateProperty(property, field, value, realValue) {
+    let selectedLayers = LayerStore.getSelectedLayers()
+    let available = PropertyStore.getProperty(property).get('available')
+
+    LayerUtils.updateProperty(
       ViewportStore.getVirtualRoot(),
-      LayerStore.getSelectedPaths(),
-      name, properties
+      LayerStore.getSelectedPaths().filter((path, index) => (
+        selectedLayers.getIn([index, 'type']).contains(available)
+      )),
+      property, field, realValue
     )
-    Dispatcher.dispatch(LayerConstants.UPDATE_PROPERTIES, { name, properties })
+
+    Dispatcher.dispatch(LayerConstants.UPDATE_PROPERTIES, { property, field, value })
   },
 
   addSelection(index) {

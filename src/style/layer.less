@@ -1,8 +1,15 @@
 @import "mixins";
 
-.layer-item {
-  .user-select(none);
-  &.selected {
-    background: lightgrey
+.layer-panel {
+  height: 50%;
+  overflow-y: scroll;
+  border: 1px solid grey;
+
+  .layer-item {
+    .user-select(none);
+
+    &.selected {
+      background: lightgrey
+    }
   }
 }

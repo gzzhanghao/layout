@@ -1,6 +1,9 @@
 import {Map, List, fromJS} from 'immutable'
 import Store from './Store'
+import PropertyStore from '../stores/PropertyStore'
 import LayerConstants from '../constants/LayerConstants'
+
+const GROUP_PROTOTYPE = fromJS({ element: 'div', type: ['box', 'group'], name: 'Unnamed Group', properties: {}, hasChildren: true })
 
 class LayerStore extends Store {
 
@@ -78,18 +81,13 @@ class LayerStore extends Store {
       baseLevel = this.state.getIn(['layers', firstLayerIndex, 'level']) + 1
     }
 
-    let group = Map({
-      type: 'group',
-      element: 'div',
-      name: 'Unnamed Group',
-      properties: Map(),
-      hasChildren: true,
-      level: baseLevel - 1
-    })
+    let group = GROUP_PROTOTYPE.set('level', baseLevel - 1)
 
     let children = this.removeLayers().map(layer => (
       layer.update('level', level => level + baseLevel)
     ))
+
+    firstLayerIndex = firstLayerIndex || 0
 
     let layers = this.state.get('layers')
     layers = layers.slice(0, firstLayerIndex).concat([group], children, layers.slice(firstLayerIndex))
@@ -129,11 +127,14 @@ class LayerStore extends Store {
     return List(removedLayers)
   }
 
-  updateProperties(name, props) {
+  updateProperty(property, field, value) {
+    let available = PropertyStore.getProperty(property).get('available')
     this.setState(this.state.update('layers', layers => (
       layers.withMutations(layers => {
         this.state.get('selectedLayers').forEach(index => {
-          layers.update(index, layer => layer.mergeIn(['properties', name], props))
+          if (layers.getIn([index, 'type']).contains(available)) {
+            layers.update(index, layer => layer.setIn(['properties', property, field], value))
+          }
         })
       })
     )))
@@ -189,7 +190,7 @@ class LayerStore extends Store {
         this.removeLayers()
         break
       case LayerConstants.UPDATE_PROPERTIES:
-        this.updateProperties(data.name, data.properties)
+        this.updateProperty(data.property, data.field, data.value)
         break
       case LayerConstants.ADD_SELECTION:
         this.addSelection(data.index)

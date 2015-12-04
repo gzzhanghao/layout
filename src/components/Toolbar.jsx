@@ -17,6 +17,6 @@ export default function Toolbar(props) {
   )
 
   function onClick(key) {
-~    LayerActions.createLayer(key)
+    LayerActions.createLayer(key)
   }
 }

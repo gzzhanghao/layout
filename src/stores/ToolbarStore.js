@@ -6,11 +6,15 @@ class ToolbarStore extends Store {
   constructor() {
     super(fromJS({
       tools: {
-        rectangle: { name: 'Rectangle', element: 'div', properties: { layout: { width: 300, height: 300 }, border: { color: '"black"', width: 1 } } },
-        image: { name: 'Image', element: 'img', properties: { layout: { width: 300, height: 300 } } },
-        text: { name: 'Text', element: 'div', properties: { content: { text: '"Lorem ipsum..."' } } }
+        image: { name: 'Image', type: ['box', 'image'], element: 'img' },
+        text: { name: 'Text', type: ['box', 'text'], element: 'div' },
+        rect: { name: 'Rectangle', type: ['box'], element: 'div' }
       }
     }))
+  }
+
+  getTools() {
+    return this.state.get('tools')
   }
 
   getTool(key) {

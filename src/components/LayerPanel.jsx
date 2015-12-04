@@ -3,15 +3,13 @@ import {List, Range} from 'immutable'
 import classNames from 'classnames'
 import LayerActions from '../actions/LayerActions'
 
-import '../style/layer.less'
-
 export default class LayerPanel extends React.Component {
 
   render() {
     let layers = this.props.layers
     let selectedLayers = this.props.selectedLayers
     return (
-      <section className="layer-panel">
+      <section className="panel layer-panel">
         <b>Layers</b>
         <button onClick={LayerActions.removeLayers} disabled={!selectedLayers.size}>Remove</button>
         <button onClick={LayerActions.createGroup}>Create Group</button>

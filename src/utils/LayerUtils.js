@@ -1,35 +1,10 @@
 import assign from 'object-assign'
 import {Map} from 'immutable'
 import VElement from 'velement'
+import PropertyStore from '../stores/PropertyStore'
 
-let e = VElement.e
-
-assign(VElement.properties, {
-
-  border(config, { style }) {
-    if (isFinite(config.width) && !Number.isNaN(parseFloat(config.width))) {
-      style.borderWidth = config.width + 'px'
-    }
-    if (config.style) {
-      style.borderStyle = config.style
-    }
-    if (config.color) {
-      style.borderColor = config.color
-    }
-  },
-
-  background(config, { style }) {
-    if (config.color) {
-      style.backgroundColor = config.color
-    } else if (config.image) {
-      style.backgroundImage = config.image
-    }
-  },
-
-  source(config, { prop }) {
-    prop.src = config.source
-  }
-})
+const e = VElement.e
+const MAX_RAND_INT = 1 << 20
 
 function getParentOf(path, fromRoot) {
   return path.slice(0, -1).reduce((parent, index) => parent.state.children[index], fromRoot)
@@ -37,31 +12,30 @@ function getParentOf(path, fromRoot) {
 
 function stringify(obj) {
   var fns = []
-  var placeholder = Date.now() + '____PLACEHOLDER____' + (Math.random() * Number.MAX_SAFE_INTEGER | 0)
-  var json = JSON.stringify(obj, (key, value) => {
+  var placeholder = Date.now() + '____PLACEHOLDER____' + (Math.random() * MAX_RAND_INT | 0)
+  return JSON.stringify(obj, (key, value) => {
     if (typeof value === 'function' || typeof value === 'string') {
       fns.push(value)
       return placeholder
     }
     return value
-  })
-  return json.replace(new RegExp('"' + placeholder + '"', 'g'), () => fns.shift() || '""')
+  }).replace(new RegExp('"' + placeholder + '"', 'g'), () => fns.shift() || '""')
 }
 
-function wrap(properties) {
+function transformProps(properties) {
   return new Function('$', `return ${stringify(properties)}`)
 }
 
-function wrapProperties(properties) {
+function parseProps(properties) {
   let layout = {}
   if (properties.has('layout')) {
     layout = properties.get('layout').toJS()
   }
   Object.keys(layout).forEach(key => {
-    layout[key] = wrap(layout[key])
+    layout[key] = transformProps(layout[key])
   })
 
-  return { layout, props: wrap(properties.remove('layout').toJS()) }
+  return { layout, props: transformProps(properties.remove('layout')) }
 }
 
 let symProps = Symbol('props')
@@ -69,15 +43,14 @@ let symProps = Symbol('props')
 let LayerUtils = {
 
   createVirtualRoot() {
-    return new VElement(e('div', { width: 768 }, { className: 'root' }))
+    return new VElement(e('div', { width: 320, height: 640 }))
   },
 
-  createLayer(virtualRoot, path, type, properties) {
-    let { layout, props } = wrapProperties(properties)
-    let opts = e(type, layout, props)
+  createLayer(virtualRoot, path, type) {
+    let opts = e(type, {}, {})
     let child = new VElement(opts)
 
-    child[symProps] = properties
+    child[symProps] = Map()
 
     let parent = getParentOf(path, virtualRoot)
     let children = parent.state.children
@@ -96,7 +69,7 @@ let LayerUtils = {
     virtualRoot.update()
   },
 
-  createGroup(virtualRoot, selectedPaths) {
+  createGroup(virtualRoot, path, selectedPaths) {
     let opts = e('div')
     let group = new VElement(opts)
 
@@ -108,9 +81,8 @@ let LayerUtils = {
       group.element.appendChild(child.element)
     })
 
-    let path = selectedPaths.first()
-    let parent = getParentOf(path, virtualRoot)
     let index = path.last()
+    let parent = getParentOf(path, virtualRoot)
     let children = parent.state.children
 
     if (children.length > index) {
@@ -142,11 +114,12 @@ let LayerUtils = {
     return removedLayers
   },
 
-  updateProperties(virtualRoot, selectedPaths, name, properties) {
+  updateProperty(virtualRoot, selectedPaths, property, field, value) {
     selectedPaths.forEach(path => {
       let node = getParentOf(path, virtualRoot).state.children[path.last()]
+      node[symProps] = node[symProps].setIn([property, field], value)
       try {
-        assign(node.opts, wrapProperties(node[symProps] = node[symProps].mergeIn([name], properties)))
+        assign(node.opts, parseProps(node[symProps]))
       } catch (e) {
         // @todo Handle it
         console.warn(e.stack)
