@@ -1,6 +1,6 @@
 import {fromJS} from 'immutable'
 import Store from './Store'
-import ViewportConstants from '../constants/ViewportConstants'
+import ViewportConstants from 'constants/ViewportConstants'
 
 class ViewportStore extends Store {
 

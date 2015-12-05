@@ -1,6 +1,6 @@
-import Size from '../fields/Size'
-import Select from '../fields/Select'
-import Color from '../fields/Color'
+import Size from 'components/fields/Size'
+import Select from 'components/fields/Select'
+import Color from 'components/fields/Color'
 
 export default  {
   name: 'Border',
@@ -8,11 +8,11 @@ export default  {
   available: 'box',
   fields: {
     style: Select({ options: [
-      { value: "none", preview: { borderStyle: 'none' } },
-      { value: "solid", preview: { borderStyle: 'solid' } },
-      { value: "dotted", preview: { borderStyle: 'dotted' } },
-      { value: "dashed", preview: { borderStyle: 'dashed' } },
-      { value: "double", preview: { borderStyle: 'double' } }
+      { value: "none" },
+      { value: "solid" },
+      { value: "dotted" },
+      { value: "dashed" },
+      { value: "double" }
     ] }),
     width: Size({ defaultValue: 3, defaultUnit: 'px', xUnits: ['%'] }),
     color: Color({ defaultValue: { r: 0, g: 0, b: 0, a: 1 } })

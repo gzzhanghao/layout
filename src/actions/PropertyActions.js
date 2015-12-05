@@ -1,6 +1,6 @@
-import Dispatcher from '../Dispatcher'
-import PropertyStore from '../stores/PropertyStore'
-import PropertyUtils from '../utils/PropertyUtils'
+import Dispatcher from 'Dispatcher'
+import PropertyStore from 'stores/PropertyStore'
+import PropertyUtils from 'utils/PropertyUtils'
 
 var PropertyActions = {
   initProperties(properties) {

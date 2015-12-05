@@ -1,7 +1,7 @@
 import React from 'react'
 import {List, Range} from 'immutable'
 import classNames from 'classnames'
-import LayerActions from '../actions/LayerActions'
+import LayerActions from 'actions/LayerActions'
 
 export default class LayerPanel extends React.Component {
 

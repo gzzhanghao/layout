@@ -1,8 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import ViewportAction from '../actions/ViewportActions'
-
-import '../style/viewport.less'
+import ViewportAction from 'actions/ViewportActions'
 
 export default class ViewportComponent extends React.Component {
 

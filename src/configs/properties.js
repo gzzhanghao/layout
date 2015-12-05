@@ -1,8 +1,8 @@
-import border from './border'
-import layout from './layout'
-import content from './content'
-import image from './image'
-import background from './background'
-import font from './font'
+import border from './properties/border'
+import layout from './properties/layout'
+import content from './properties/content'
+import image from './properties/image'
+import background from './properties/background'
+import font from './properties/font'
 
 export default [ content, font, image, layout, background, border ]

@@ -1,6 +1,7 @@
-import Size from '../fields/Size'
-import Text from '../fields/Text'
-import Color from '../fields/Color'
+import Size from 'components/fields/Size'
+import Text from 'components/fields/Text'
+import Color from 'components/fields/Color'
+import Select from 'components/fields/Select'
 
 export default  {
   name: 'Font',
@@ -8,6 +9,10 @@ export default  {
   available: 'text',
   fields: {
     font: Text(),
+    weight: Select({ options: [
+      { value: "normal" },
+      { value: "bold" }
+    ] }),
     size: Size({ defaultValue: 1, defaultUnit: 'em' }),
     color: Color({ defaultValue: { r: 0, g: 0, b: 0, a: 1 } })
   },
@@ -17,6 +22,9 @@ export default  {
     }
     if (config.size) {
       style.fontSize = config.size
+    }
+    if (config.weight) {
+      style.fontWeight = config.weight
     }
     if (config.color) {
       style.color = config.color

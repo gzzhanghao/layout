@@ -1,6 +1,6 @@
-import Dispatcher from '../Dispatcher'
-import LayerUtils from '../utils/LayerUtils'
-import ViewportConstants from '../constants/ViewportConstants'
+import Dispatcher from 'Dispatcher'
+import LayerUtils from 'utils/LayerUtils'
+import ViewportConstants from 'constants/ViewportConstants'
 
 let e = VElement.e
 

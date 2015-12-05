@@ -1,31 +1,31 @@
 import {Map, List} from 'immutable'
-import Dispatcher from '../Dispatcher'
-import ViewportStore from '../stores/ViewportStore'
-import LayerUtils from '../utils/LayerUtils'
-import LayerStore from '../stores/LayerStore'
-import ToolbarStore from '../stores/ToolbarStore'
-import PropertyStore from '../stores/PropertyStore'
-import LayerConstants from '../constants/LayerConstants'
+import Dispatcher from 'Dispatcher'
+import ViewportStore from 'stores/ViewportStore'
+import LayerUtils from 'utils/LayerUtils'
+import LayerStore from 'stores/LayerStore'
+import ToolbarStore from 'stores/ToolbarStore'
+import PropertyStore from 'stores/PropertyStore'
+import LayerConstants from 'constants/LayerConstants'
 
 var LayerActions = {
 
-  createLayer(key) {
-    let tool = ToolbarStore.getTool(key)
+  createLayer(toolIndex) {
+    let tool = ToolbarStore.getTool(toolIndex)
     let element = tool.get('element')
 
-    let index = LayerStore.getSelectedIndexes().sort().first()
-    let path = List([0])
+    let selectedIndex = LayerStore.getSelectedIndexes().sort().first()
+    let selectedPath = List([0])
 
-    if (typeof index !== 'undefined') {
-      path = LayerStore.getPathAt(index)
-      if (LayerStore.getLayerAt(index).get('hasChildren')) {
-        path = path.push(0)
+    if (typeof selectedIndex !== 'undefined') {
+      selectedPath = LayerStore.getPathAt(selectedIndex)
+      if (LayerStore.getLayerAt(selectedIndex).get('hasChildren')) {
+        selectedPath = selectedPath.push(0)
       }
     }
 
     LayerUtils.createLayer(
       ViewportStore.getVirtualRoot(),
-      path, element
+      selectedPath, element
     )
 
     Dispatcher.dispatch(LayerConstants.CREATE_LAYER, {

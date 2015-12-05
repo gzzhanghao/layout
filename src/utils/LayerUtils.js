@@ -1,7 +1,7 @@
 import assign from 'object-assign'
 import {Map} from 'immutable'
 import VElement from 'velement'
-import PropertyStore from '../stores/PropertyStore'
+import PropertyStore from 'stores/PropertyStore'
 
 const e = VElement.e
 const MAX_RAND_INT = 1 << 20
@@ -75,7 +75,7 @@ let LayerUtils = {
 
     group[symProps] = Map()
 
-    group.state.children = this.removeLayers(virtualRoot, selectedPaths)
+    group.state.children = this.removeLayers(virtualRoot, selectedPaths, true)
     group.opts.children = group.state.children.map(child => child.opts)
     group.state.children.forEach(child => {
       group.element.appendChild(child.element)
@@ -101,7 +101,7 @@ let LayerUtils = {
     // @todo
   },
 
-  removeLayers(virtualRoot, selectedPaths) {
+  removeLayers(virtualRoot, selectedPaths, notUpdate) {
     let removedLayers = selectedPaths.reverse().toArray().map(path => {
       let parent = getParentOf(path, virtualRoot)
       let index = path.last()
@@ -110,7 +110,9 @@ let LayerUtils = {
       parent.opts.children.splice(index, 1)
       return children.splice(index, 1)[0]
     }).reverse()
-    virtualRoot.update()
+    if (!notUpdate) {
+      virtualRoot.update()
+    }
     return removedLayers
   },
 

@@ -1,7 +1,7 @@
 import {Map, List, fromJS} from 'immutable'
 import Store from './Store'
-import PropertyStore from '../stores/PropertyStore'
-import LayerConstants from '../constants/LayerConstants'
+import PropertyStore from 'stores/PropertyStore'
+import LayerConstants from 'constants/LayerConstants'
 
 const GROUP_PROTOTYPE = fromJS({ element: 'div', type: ['box', 'group'], name: 'Unnamed Group', properties: {}, hasChildren: true })
 

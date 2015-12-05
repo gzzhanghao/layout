@@ -1,4 +1,4 @@
-import Color from '../fields/Color'
+import Color from 'components/fields/Color'
 
 export default  {
   name: 'Background',

@@ -1,5 +1,5 @@
 import {Map, List} from 'immutable'
-import LayerActions from '../actions/LayerActions'
+import LayerActions from 'actions/LayerActions'
 
 const MULTI_VALUE = {}
 

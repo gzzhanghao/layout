@@ -1,4 +1,4 @@
-import Size from '../fields/Size'
+import Size from 'components/fields/Size'
 
 export default {
   name: 'Layout',

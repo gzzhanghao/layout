@@ -1,7 +1,7 @@
 import {fromJS} from 'immutable'
 import Store from './Store'
 
-import properties from '../configs/properties'
+import properties from 'configs/properties'
 
 class PropertyStore extends Store {
 

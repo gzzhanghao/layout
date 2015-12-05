@@ -1,16 +1,12 @@
 import {fromJS} from 'immutable'
 import Store from './Store'
 
+import tools from 'configs/tools'
+
 class ToolbarStore extends Store {
 
   constructor() {
-    super(fromJS({
-      tools: {
-        image: { name: 'Image', type: ['box', 'image'], element: 'img' },
-        text: { name: 'Text', type: ['box', 'text'], element: 'div' },
-        rect: { name: 'Rectangle', type: ['box'], element: 'div' }
-      }
-    }))
+    super(fromJS({ tools }))
   }
 
   getTools() {

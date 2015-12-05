@@ -1,4 +1,4 @@
-import Text from '../fields/Text'
+import Text from 'components/fields/Text'
 
 export default  {
   name: 'Image',

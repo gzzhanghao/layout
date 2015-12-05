@@ -1,3 +1,5 @@
+var path = require('path')
+
 module.exports = {
   entry: './src/index',
   output: {
@@ -25,6 +27,7 @@ module.exports = {
   },
   devtool: '#source-map',
   resolve: {
+    root: path.join(__dirname, 'src'),
     extensions: ['', '.js', '.jsx']
   }
 }
